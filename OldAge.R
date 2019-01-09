@@ -19,6 +19,8 @@ table_cleaned_rows <- table_cleaned_columns[-c(1,18:22)]
 rownames(table_cleaned_rows) <- 1:nrow(table_cleaned_rows)
 colnames(table_cleaned_rows) <- c("Birthplace","Name", "Born", "Died", "Age - Years", "Age - Days", "Race", "Sex", "Deathplace", "When Oldest - Years Range", "When Oldest - Age Range", "Length of Reign - Years", "Length of Reign - Days", "Reign Length - In Years", "Age at Accession - Years", "Age at Asccession - Days")
 
+#Export as CSV
+write.csv(table_cleaned_rows, file = "oldestAge.csv")
 
 
 
