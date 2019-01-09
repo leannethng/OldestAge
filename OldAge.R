@@ -15,28 +15,4 @@ webpage_table
 
 
 
-# OLD CODE --- Extract records info ------
-results <- webpage %>% html_nodes("tr") %>% html_nodes("height:15.75pt")  %>% html_nodes("td")
-results
-
-first_result <- results[1]
-
-first_result 
-
-new_data <- first_result %>% html_text(trim = TRUE)
-new_data
-
-
-# OLD CODE --- Run through -----
-records <- vector("list", length = length(results))
-
-for (i in seq_along(results)) {
-    data <- str_c(results[i] %>% html_text(trim = TRUE))
-    records[[i]] <- data_frame(data = data)
-}
-
-df <- bind_rows(records)
-glimpse(df)
-
-
 
