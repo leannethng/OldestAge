@@ -26,7 +26,7 @@ write.csv(table_cleaned_rows, file = "oldestAge.csv")
 OldAgeCleanedDates <- table_cleaned_rows
 
 
-#This is the same as below but removing it fromt he for loop for testing
+#This is the same as below but removing it from the for loop for testing
 results <- str_detect(OldAgeCleanedDates[,5], "\\*")
 changeResults <-  which(results)
 OldAgeCleanedDates[changeResults,5] <- sub("\\*.*", "", OldAgeCleanedDates[changeResults,5])
@@ -40,9 +40,16 @@ for(i in 1:ncol(OldAgeCleanedDates)){
 }
 
 
+#Made another loop for finding everything after [ to remove the numbers for footnotes. 
+for(i in 1:ncol(OldAgeCleanedDates)){
+    results <- str_detect(OldAgeCleanedDates[,i], "\\[.*")
+    changeResults <-  which(results)
+    OldAgeCleanedDates[changeResults,i] <- sub("\\[.*", "", OldAgeCleanedDates[changeResults,i])
+}
+
 #Remove [*] footnotes - can probably turn into a loop
-OldAgeCleanedDates$Name <- sub("\\[.*", "", OldAgeCleanedDates$Name)
-OldAgeCleanedDates$Born <- sub("\\[.*", "", OldAgeCleanedDates$Born)
+#OldAgeCleanedDates$Name <- sub("\\[.*", "", OldAgeCleanedDates$Name)
+#OldAgeCleanedDates$Born <- sub("\\[.*", "", OldAgeCleanedDates$Born)
 
 #Turn dates into dates - can probably turn into a loop
 OldAgeCleanedDates$Died1  <- mdy(OldAgeCleanedDates$Died)
