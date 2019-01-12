@@ -17,10 +17,49 @@ table_cleaned_columns <- webpage_table[-c(1:8, 74:118), ]
 table_cleaned_rows <- table_cleaned_columns[-c(1,18:22)]
 
 rownames(table_cleaned_rows) <- 1:nrow(table_cleaned_rows)
-colnames(table_cleaned_rows) <- c("Birthplace","Name", "Born", "Died", "Age - Years", "Age - Days", "Race", "Sex", "Deathplace", "When Oldest - Years Range", "When Oldest - Age Range", "Length of Reign - Years", "Length of Reign - Days", "Reign Length - In Years", "Age at Accession - Years", "Age at Asccession - Days")
+colnames(table_cleaned_rows) <- c("Birthplace","Name", "Born", "Died", "Age-Years", "Age-Days", "Race", "Sex", "Deathplace", "When_Oldest-Years_Range", "When_Oldest-Age_Range", "Length_of_Reign-Years", "Length_of_Reign-Days", "Reign_Length-In_Years", "Age_at_Accession-Years", "Age_at_Accession-Days")
 
-#Export as CSV
+#Export as CSV ----
 write.csv(table_cleaned_rows, file = "oldestAge.csv")
+
+#Next part of cleaning, creating a copy of dataframe for going forward
+OldAgeCleanedDates <- table_cleaned_rows
+
+
+#trying to figure out how to loop over entire dataframe to find certain symbols then figure out how to get of symbols. 
+results <- str_detect(OldAgeCleanedDates[,5], "\\*")
+#This doesn't work yet
+if(results == TRUE){
+    sub("\\*.*", "", OldAgeCleanedDates[,5])
+}
+ 
+#This would be this loop part - not working currently
+for(i in 1:ncol(OldAgeCleanedDates)){
+    #print(OldAgeCleanedDates[,i])
+    
+    results <- str_detect(OldAgeCleanedDates[,i], "\\*")
+    #results <- which(OldAgeCleanedDates[,i] == "\\*", arr.ind=TRUE)
+    if(results == TRUE){
+        sub("\\*", "", OldAgeCleanedDates[,i])
+    }
+}
+
+
+#Remove [*] footnotes - can probably turn into a loop
+OldAgeCleanedDates$Name <- sub("\\[.*", "", OldAgeCleanedDates$Name)
+OldAgeCleanedDates$Born <- sub("\\[.*", "", OldAgeCleanedDates$Born)
+
+#Turn dates into dates - can probably turn into a loop
+OldAgeCleanedDates$Died1  <- mdy(OldAgeCleanedDates$Died)
+OldAgeCleanedDates$Born1  <- mdy(OldAgeCleanedDates$Born)
+
+
+##Things to do 
+# - Birthplace - split out states and countries
+# - Names - Remove notes
+# - Born and Died - turn into dates
+# - Age in Years/days - turned into combined years/days
+# - 
 
 
 
