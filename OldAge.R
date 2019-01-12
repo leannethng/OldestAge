@@ -26,22 +26,20 @@ write.csv(table_cleaned_rows, file = "oldestAge.csv")
 OldAgeCleanedDates <- table_cleaned_rows
 
 
-#trying to figure out how to loop over entire dataframe to find certain symbols then figure out how to get of symbols. 
+#This is the same as below but removing it fromt he for loop for testing
 results <- str_detect(OldAgeCleanedDates[,5], "\\*")
 #This doesn't work yet
-if(results == TRUE){
-    sub("\\*.*", "", OldAgeCleanedDates[,5])
-}
+changeResults <-  which(results)
+OldAgeCleanedDates[changeResults,5] <- sub("\\*.*", "", OldAgeCleanedDates[changeResults,5])
+
+
  
-#This would be this loop part - not working currently
+#This for loop looks for '*' symbol and cleans it from all the data
 for(i in 1:ncol(OldAgeCleanedDates)){
-    #print(OldAgeCleanedDates[,i])
-    
     results <- str_detect(OldAgeCleanedDates[,i], "\\*")
-    #results <- which(OldAgeCleanedDates[,i] == "\\*", arr.ind=TRUE)
-    if(results == TRUE){
-        sub("\\*", "", OldAgeCleanedDates[,i])
-    }
+    #This doesn't work yet
+    changeResults <-  which(results)
+    OldAgeCleanedDates[changeResults,i] <- sub("\\*.*", "", OldAgeCleanedDates[changeResults,i])
 }
 
 
