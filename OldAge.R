@@ -28,16 +28,13 @@ OldAgeCleanedDates <- table_cleaned_rows
 
 #This is the same as below but removing it fromt he for loop for testing
 results <- str_detect(OldAgeCleanedDates[,5], "\\*")
-#This doesn't work yet
 changeResults <-  which(results)
 OldAgeCleanedDates[changeResults,5] <- sub("\\*.*", "", OldAgeCleanedDates[changeResults,5])
 
 
- 
 #This for loop looks for '*' symbol and cleans it from all the data
 for(i in 1:ncol(OldAgeCleanedDates)){
     results <- str_detect(OldAgeCleanedDates[,i], "\\*")
-    #This doesn't work yet
     changeResults <-  which(results)
     OldAgeCleanedDates[changeResults,i] <- sub("\\*.*", "", OldAgeCleanedDates[changeResults,i])
 }
