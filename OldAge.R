@@ -4,6 +4,7 @@ library(stringr)
 library(dplyr)
 library(lubridate)
 library(readr)
+library(ggplot2)
 
 # Read web page
 webpage <- read_html("http://www.grg.org/Adams/C_files/sheet001.htm")
@@ -56,29 +57,50 @@ for(i in 1:ncol(OldAgeCleanedDates)){
 }
 
 
-#Remove [*] footnotes - can probably turn into a loop
-#OldAgeCleanedDates$Name <- sub("\\[.*", "", OldAgeCleanedDates$Name)
-#OldAgeCleanedDates$Born <- sub("\\[.*", "", OldAgeCleanedDates$Born)
+#DOESN'T WORK -- Turn dates into dates - can probably turn into a loop
+OldAgeCleanedDates$DiedNew  <- mdy(OldAgeCleanedDates$Died)
+OldAgeCleanedDates$BornNew  <- mdy(OldAgeCleanedDates$Born)
 
-#Turn dates into dates - can probably turn into a loop
-OldAgeCleanedDates$Died  <- mdy(OldAgeCleanedDates$Died)
-OldAgeCleanedDates$Born  <- mdy(OldAgeCleanedDates$Born)
+#Need to use as.Date but need to change Sept into Sep first
+str_replace(OldAgeCleanedDates$Born, "Sept", "Sep")
 
-OldAgeCleanedDates$AgeDays <- as.numeric(OldAgeCleanedDates$AgeDays)
-OldAgeCleanedDates$AgeYears <- as.numeric(OldAgeCleanedDates$AgeYears)    
+#Then figureo ut how to combine these two columns
+a <- as.Date(OldAgeCleanedDates$Born, format = "%b. %d, %Y")
+b <- as.Date(OldAgeCleanedDates$Born, format = "%b %d, %Y")
+
+a[is.na(a)] <- b[!is.na(b)] # Combine both while keeping their ranks
+OldAgeCleanedDates$BornNew <- a # Put it back in your dataframe
+OldAgeCleanedDates$BornNew
 
 
-OldAgeCleanedDates$LengthofReignYears <- as.numeric(OldAgeCleanedDates$LengthofReignYears)
-
-
+#Turning numbers into numeric values
+OldAgeCleanedDates <- transform(OldAgeCleanedDates
+                                , AgeDays = as.numeric(AgeDays)
+                                , AgeYears = as.numeric(AgeYears)
+                                , LengthofReignYears = as.numeric(LengthofReignYears)
+                                , LengthofReignDays = as.numeric(LengthofReignDays)
+                                , ReignLengthInYears = as.numeric(ReignLengthInYears)
+                                , AgeAtAccessionYears = as.numeric(AgeAtAccessionYears)
+                                , AgeAtAccessionDays = as.numeric(AgeAtAccessionDays)
+                                )
 
 str(OldAgeCleanedDates)
+
+
 ##Things to do
 # - Birthplace - split out states and countries
 # - Names - Remove notes
 # - Born and Died - turn into dates
 # - Age in Years/days - turned into combined years/days
 # - 
+
+#Should probably save the data into a clean file here
+
+#Testing some visualizations!
+ggplot(data = OldAgeCleanedDates, mapping = aes(x = AgeYears, y = BornNew, color = Sex)) +
+    geom_jitter(width=0.2,alpha=0.4,aes(color = Sex)) 
+
+
 
 
 
