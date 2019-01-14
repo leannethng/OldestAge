@@ -58,19 +58,37 @@ for(i in 1:ncol(OldAgeCleanedDates)){
 
 
 #DOESN'T WORK -- Turn dates into dates - can probably turn into a loop
-OldAgeCleanedDates$DiedNew  <- mdy(OldAgeCleanedDates$Died)
-OldAgeCleanedDates$BornNew  <- mdy(OldAgeCleanedDates$Born)
+#OldAgeCleanedDates$DiedNew  <- mdy(OldAgeCleanedDates$Died)
+#OldAgeCleanedDates$BornNew  <- mdy(OldAgeCleanedDates$Born)
 
 #Need to use as.Date but need to change Sept into Sep first
-str_replace(OldAgeCleanedDates$Born, "Sept", "Sep")
+OldAgeCleanedDates$Born <- str_replace(OldAgeCleanedDates$Born, "Sept", "Sep")
 
-#Then figureo ut how to combine these two columns
+#Then figure out how to combine these two columns
 a <- as.Date(OldAgeCleanedDates$Born, format = "%b. %d, %Y")
 b <- as.Date(OldAgeCleanedDates$Born, format = "%b %d, %Y")
+
+
+
 
 a[is.na(a)] <- b[!is.na(b)] # Combine both while keeping their ranks
 OldAgeCleanedDates$BornNew <- a # Put it back in your dataframe
 OldAgeCleanedDates$BornNew
+
+
+#Need to use as.Date but need to change Sept into Sep first
+OldAgeCleanedDates$Died <- str_replace(OldAgeCleanedDates$Died, "Sept", "Sep")
+
+
+#Then figure out how to combine these two columns
+c <- as.Date(OldAgeCleanedDates$Died, format = "%b. %d, %Y")
+d <- as.Date(OldAgeCleanedDates$Died, format = "%b %d, %Y")
+
+
+
+c[is.na(c[-65])] <- d[!is.na(d[-65])] # Combine both while keeping their ranks
+OldAgeCleanedDates$DiedNew <- c # Put it back in your dataframe
+OldAgeCleanedDates$DiedNew
 
 
 #Turning numbers into numeric values
@@ -95,11 +113,17 @@ str(OldAgeCleanedDates)
 # - 
 
 #Should probably save the data into a clean file here
+str(OldAgeCleanedDates)
+
+OldestAgeVisData <- subset(OldAgeCleanedDates, select = c(Name, Birthplace, BornNew, DiedNew, Race, Sex))
 
 #Testing some visualizations!
-ggplot(data = OldAgeCleanedDates, mapping = aes(x = AgeYears, y = BornNew, color = Sex)) +
+ggplot(data = OldestAgeVisData, mapping = aes(x = Name, y = BornNew, color = Sex)) +
     geom_jitter(width=0.2,alpha=0.4,aes(color = Sex)) 
 
+
+ggplot(OldestAgeVisData, aes(x = reorder(BornNew, Name),color = Sex)) +
+    geom_linerange(aes(ymin = BornNew, ymax = DiedNew)) 
 
 
 
