@@ -5,6 +5,7 @@ library(dplyr)
 library(lubridate)
 library(readr)
 library(ggplot2)
+library(RColorBrewer)
 
 # Read web page
 webpage <- read_html("http://www.grg.org/Adams/C_files/sheet001.htm")
@@ -105,27 +106,41 @@ OldAgeCleanedDates <- transform(OldAgeCleanedDates
 str(OldAgeCleanedDates)
 
 
-##Things to do
-# - Birthplace - split out states and countries
-# - Names - Remove notes
-# - Born and Died - turn into dates
-# - Age in Years/days - turned into combined years/days
-# - 
-
 #Should probably save the data into a clean file here
 str(OldAgeCleanedDates)
 
+#Creating a dataset to work with
 OldestAgeVisData <- subset(OldAgeCleanedDates, select = c(Name, Birthplace, BornNew, DiedNew, Race, Sex))
 
+#Age in Days
+OldestAgeVisData$AgeDays <- difftime(OldestAgeVisData$DiedNew, OldestAgeVisData$BornNew,  units = c("days") )
+
+#Age in Weeks
+OldestAgeVisData$AgeWeeks <- difftime(OldestAgeVisData$DiedNew, OldestAgeVisData$BornNew,  units = c("weeks") )
+
+
+str(OldestAgeVisData)
+
+OldestAgeVisData$AgeDays <- as.numeric(OldestAgeVisData$AgeDays)
+OldestAgeVisData$AgeWeeks <- as.numeric(OldestAgeVisData$AgeWeeks)
 #Testing some visualizations!
-ggplot(data = OldestAgeVisData, mapping = aes(x = Name, y = BornNew, color = Sex)) +
-    geom_jitter(width=0.2,alpha=0.4,aes(color = Sex)) 
+
+OldestAgeVisData$AgeYears <- OldestAgeVisData$AgeWeeks/52.143
 
 
-ggplot(OldestAgeVisData, aes(x = reorder(BornNew, Name),color = Sex)) +
+
+ggplot(data = OldestAgeVisData, mapping = aes(x = order(BornNew), y = AgeYears, color = Race)) +
+    geom_jitter(size=3,alpha=1,aes(color = Race)) + scale_colour_brewer(palette = "Accent")
+
+ggplot(data = OldestAgeVisData, mapping = aes(x = BornNew, y = AgeYears, color = Race)) +
+    geom_line(alpha=1,aes(color = Race)) + scale_colour_brewer(palette = "Accent") + labs(x = "Born")
+
+
+ggplot(OldestAgeVisData, aes(x = BornNew,color = Sex)) +
     geom_linerange(aes(ymin = BornNew, ymax = DiedNew)) 
 
 
-
+ggplot(OldestAgeVisData, aes(x = BornNew,color = Sex)) +
+    geom_linerange(aes(ymin = 0, ymax = AgeYears)) 
 
 
