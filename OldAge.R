@@ -58,18 +58,12 @@ for(i in 1:ncol(OldAgeCleanedDates)){
 }
 
 
-#DOESN'T WORK -- Turn dates into dates - can probably turn into a loop
-#OldAgeCleanedDates$DiedNew  <- mdy(OldAgeCleanedDates$Died)
-#OldAgeCleanedDates$BornNew  <- mdy(OldAgeCleanedDates$Born)
-
 #Need to use as.Date but need to change Sept into Sep first
 OldAgeCleanedDates$Born <- str_replace(OldAgeCleanedDates$Born, "Sept", "Sep")
 
 #Then figure out how to combine these two columns
 a <- as.Date(OldAgeCleanedDates$Born, format = "%b. %d, %Y")
 b <- as.Date(OldAgeCleanedDates$Born, format = "%b %d, %Y")
-
-
 
 
 a[is.na(a)] <- b[!is.na(b)] # Combine both while keeping their ranks
@@ -128,7 +122,6 @@ OldestAgeVisData$AgeWeeks <- as.numeric(OldestAgeVisData$AgeWeeks)
 OldestAgeVisData$AgeYears <- OldestAgeVisData$AgeWeeks/52.143
 
 
-
 ggplot(data = OldestAgeVisData, mapping = aes(x = order(BornNew), y = AgeYears, color = Race)) +
     geom_jitter(size=3,alpha=1,aes(color = Race)) + scale_colour_brewer(palette = "Accent")
 
@@ -136,11 +129,25 @@ ggplot(data = OldestAgeVisData, mapping = aes(x = BornNew, y = AgeYears, color =
     geom_line(alpha=1,aes(color = Race)) + scale_colour_brewer(palette = "Accent") + labs(x = "Born")
 
 
-ggplot(OldestAgeVisData, aes(x = BornNew,color = Sex)) +
+ggplot(OldestAgeVisData, aes(x = reorder(Name, o), y = BornNew,color = Sex)) +
     geom_linerange(aes(ymin = BornNew, ymax = DiedNew)) 
 
+ggplot(OldestAgeVisData, aes(x = reorder(Name, BornNew), color = Sex)) +
+    geom_linerange(aes(ymin = 0, ymax = AgeYears))
 
-ggplot(OldestAgeVisData, aes(x = BornNew,color = Sex)) +
-    geom_linerange(aes(ymin = 0, ymax = AgeYears)) 
+#Line chart
+ggplot(OldestAgeVisData, aes(x = BornNew, y = AgeYears)) +
+    geom_line() +
+    geom_point(aes(color = Sex)) +
+    geom_text(aes(label=paste(format(round(AgeYears, digits = 1)),"years"),vjust = -1, hjust = .5), size = 3, alpha = 1, color = "#151515", check_overlap = TRUE, position = "dodge")
+    
+#Bar chart
+ggplot(OldestAgeVisData, aes(x = AgeYears, y = BornNew, color = Sex)) +
+    geom_point() +
+    geom_segment(aes(xend= 0, yend=BornNew, color = Sex), size = 1, lineend = "round" ) +
+    #geom_linerange(aes(xmin = 0, xmax = AgeYears)) +
+    geom_text(aes(label=paste(format(round(AgeYears, digits = 1)),"years"),vjust = 0, hjust = 0), size = 2, alpha = 1, color = "#151515") +
+   xlim(0,130) 
+  
 
 
